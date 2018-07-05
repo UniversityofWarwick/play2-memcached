@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.9.1"
+  val appVersion      = "0.9.2-warwick"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
@@ -56,11 +56,14 @@ object ApplicationBuild extends Build {
       libraryDependencies += "org.specs2" %% "specs2-core" % "3.9.4" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
+      credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
       publishTo := {
+        val WarwickSnapshots: MavenRepository = "Nexus Snapshots" at "https://mvn.elab.warwick.ac.uk/nexus/content/repositories/snapshots"
+        val WarwickReleases: MavenRepository = "Nexus Releases" at "https://mvn.elab.warwick.ac.uk/nexus/content/repositories/releases"
+
         val v = version.value
-        val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
-        else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
+        if (v.trim.endsWith("SNAPSHOT")) Some(WarwickSnapshots)
+        else                             Some(WarwickReleases)
       },
       publishMavenStyle := true,
       publishArtifact in Test := false,
